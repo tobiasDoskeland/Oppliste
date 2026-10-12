@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <title>Logg for {{ person.Name }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <script>
+    (function () {
+        const saved = localStorage.getItem("theme");
+
+        if (saved === "dark") {
+            document.documentElement.classList.add("dark");
+        } else if (saved === "light") {
+            document.documentElement.classList.remove("dark");
+        } else {
+            // No saved preference → use system
+            if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                document.documentElement.classList.add("dark");
+            }
+        }
+    })();
+    </script>
+
+</head>
+<body>
+
+    <nav>
+        <div class="container">
+            <strong>Oppliste</strong>
+            <div class="nav-links">
+                <a href="/">← Tilbake til oversikten</a>
+                {% if session.user_id %}
+                    <span>| Logget inn som {{ session.username }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <header>
+            <h1>Logg for {{ person.Name }}</h1>
+        </header>
+
+        {% if session.user_id %}
+        <div class="card">
+            <h3>Gi poeng til {{ person.Name }}</h3>
+            <form action="/add_points/{{ person.ID }}" method="POST">
+                <div class="grid">
+                    <div>
+                        <label>Antall poeng</label>
+                        <input type="number" name="points" placeholder="f.eks. 10" required>
+                    </div>
+                    <div>
+                        <label>Begrunnelse</label>
+                        <input type="text" name="message" placeholder="Hvorfor gis poengene?" required>
+                    </div>
+                </div>
+                <button type="submit" style="margin-top: 10px;">Lagre poeng</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <h3>Historikk</h3>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Poeng</th>
+                            <th>Melding</th>
+                            <th>Gitt av</th>
+                            <th>Dato</th>
+                            {% if session.is_admin %}
+                                <th>Admin</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td><strong>{{ log.points }}</strong></td>
+                            <td>{{ log.message }}</td>
+                            <td>{{ log.Gitt_av }}</td>
+                            <td><small>{{ log.created_at }}</small></td>
+                            {% if session.is_admin %}
+                            <td>
+                                <a href="/delete_log/{{ log.id }}" 
+                                class="delete-btn" 
+                                onclick="return confirm('Er du sikker på at du vil slette denne loggen?')">
+                                Slett
+                                </a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% if not logs %}
+                <p>Ingen poeng er registrert ennå.</p>
+            {% endif %}
+        </div>
+    </div>
+
+</body>
+</html>

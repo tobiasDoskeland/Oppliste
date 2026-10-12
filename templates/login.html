@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+    <meta charset="UTF-8">
+    <title>Logg inn</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script>
+    (function () {
+        const saved = localStorage.getItem("theme");
+
+        if (saved === "dark") {
+            document.documentElement.classList.add("dark");
+        } else if (saved === "light") {
+            document.documentElement.classList.remove("dark");
+        } else {
+            // No saved preference → use system
+            if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+                document.documentElement.classList.add("dark");
+            }
+        }
+    })();
+    </script>
+</head>
+<body class="container">
+    <article style="max-width: 400px; margin: 50px auto;">
+        <h2>Logg inn</h2>
+        <form method="POST">
+            <label>Brukernavn</label>
+            <input type="text" name="username" required>
+            <label>Passord</label>
+            <input type="password" name="password" required>
+            <button type="submit">Logg inn</button>
+        </form>
+        <br>
+        <a href="/">Tilbake</a>
+    </article>
+</body>
+</html>
